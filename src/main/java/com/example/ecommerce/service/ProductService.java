@@ -5,9 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.repository.ProductRepository;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -16,6 +20,7 @@ public class ProductService {
     private ProductRepository repo;
     @Autowired
     private Map<String, Mobile> mobileMap;
+    private final String uploadimg="upload/";
 
     public Product addProduct(Product product) {
         product.setCreatedAt(product.CurrentDateTime());
@@ -29,17 +34,47 @@ public class ProductService {
         return repo.save(product);
     }
     //Method overloading
-    public Product addProduct(String name, double price, int quantity, String brand) {
+    public Product addProduct(String name, double price, int quantity, String brand, MultipartFile image) {
 
-        Product product = new Product();
-        product.setName(name);
-        product.setPrice(price);
-        product.setQuantity(quantity);
-        product.setBrand(brand);
-        product.setCreatedAt(product.CurrentDateTime());
-        Mobile mobile = mobileMap.get(product.getBrand().toLowerCase());
-        product.setDescription(mobile.getDetails());
-        return repo.save(product);
+        try {
+            // check image
+            if (image == null || image.isEmpty()) {
+                throw new RuntimeException("Image is empty");
+            }
+
+            // create folder
+            String uploadDir = System.getProperty("user.dir") + "/uploads/";
+            File dir = new File(uploadDir);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            }
+
+            // save file
+            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
+            File file = new File(uploadDir + fileName);
+            image.transferTo(file);
+
+            // create product
+            Product product = new Product();
+            product.setName(name);
+            product.setPrice(price);
+            product.setQuantity(quantity);
+            product.setBrand(brand);
+            product.setCreatedAt(product.CurrentDateTime());
+            product.setImagePath(fileName);
+
+            Mobile mobile = mobileMap.get(product.getBrand().toLowerCase());
+            if (mobile == null) {
+                System.out.println("Invalid input");
+            }
+            product.setDescription(mobile.getDetails());
+
+            return repo.save(product);
+
+        } catch (Exception e) {
+            e.printStackTrace(); // VERY IMPORTANT
+            throw new RuntimeException("Error while uploading image");
+        }
     }
 
     public List<Product> getAllProducts() {

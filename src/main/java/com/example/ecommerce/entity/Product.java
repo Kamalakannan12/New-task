@@ -1,5 +1,6 @@
 package com.example.ecommerce.entity;
 
+import com.example.ecommerce.module.DateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
@@ -17,6 +18,24 @@ public class Product extends DateTime {
     private String brand;
     private String Description;
     private LocalDateTime createdAt;
+    private String imagePath;
+
+    @Transient
+    private String imageUrl;
+
+    public String getImageUrl() {
+        if (imagePath == null) return null;
+        return "http://localhost:8080/products/image/" + imagePath;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
+    }
+
 
     // Constructors
     public Product() {}

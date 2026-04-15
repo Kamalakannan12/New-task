@@ -7,7 +7,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.service.ProductService;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @RestController
@@ -26,9 +30,10 @@ public class ProductController {
             @RequestParam String name,
             @RequestParam double price,
             @RequestParam int quantity,
-            @RequestParam String brand) {
+            @RequestParam String brand,
+            @RequestParam MultipartFile image)throws IOException {
 
-        return service.addProduct(name, price, quantity,brand);
+        return service.addProduct(name, price, quantity,brand, image);
     }
 
     @GetMapping
@@ -61,5 +66,18 @@ public class ProductController {
     @DeleteMapping("/{id}")
     public String deleteProduct(@PathVariable Long id) {
         return service.deleteProduct(id);
+    }
+    @GetMapping("/image/{fileName}")
+    public ResponseEntity<byte[]> getImage(@PathVariable String fileName) throws IOException {
+
+        String path = System.getProperty("user.dir") + "/uploads/" + fileName;
+        File file = new File(path);
+
+        byte[] image = Files.readAllBytes(file.toPath());
+
+        return ResponseEntity
+                .ok()
+                .header("Content-Type", Files.probeContentType(file.toPath()))
+                .body(image);
     }
 }
