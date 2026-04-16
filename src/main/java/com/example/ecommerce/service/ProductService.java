@@ -1,6 +1,8 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.configuration.calculation;
 import com.example.ecommerce.mobile.Mobile;
+import com.example.ecommerce.configuration.ImageSaveThread;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.ecommerce.entity.Product;
@@ -8,10 +10,8 @@ import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @Service
 public class ProductService {
@@ -20,6 +20,8 @@ public class ProductService {
     private ProductRepository repo;
     @Autowired
     private Map<String, Mobile> mobileMap;
+    @Autowired
+    private Map<String, calculation> calculationMap;
     private final String uploadimg="upload/";
 
     public Product addProduct(Product product) {
@@ -51,8 +53,10 @@ public class ProductService {
 
             // save file
             String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-            File file = new File(uploadDir + fileName);
-            image.transferTo(file);
+//            File file = new File(uploadDir + fileName);
+//            image.transferTo(file);
+            ImageSaveThread thread = new ImageSaveThread(image, uploadDir, fileName);
+            thread.start();
 
             // create product
             Product product = new Product();
@@ -68,6 +72,17 @@ public class ProductService {
                 System.out.println("Invalid input");
             }
             product.setDescription(mobile.getDetails());
+
+            //calculation
+            List<Product> list = List.of(product);
+
+            double amount = calculationMap.get("subtotal").calculate(list);
+            double tax = calculationMap.get("tax").calculate(list);
+            double total = calculationMap.get("final").calculate(list);
+
+            product.setAmount(amount);
+            product.setTax(tax);
+            product.setTotal_Amount(total);
 
             return repo.save(product);
 

@@ -1,12 +1,12 @@
 package com.example.ecommerce.entity;
 
-import com.example.ecommerce.module.DateTime;
+import com.example.ecommerce.configuration.DateTime;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
 
 import java.time.LocalDateTime;
 
-@JsonPropertyOrder({"id", "name", "price", "quantity", "createdAt"})
+@JsonPropertyOrder({"id", "name", "price", "quantity", "Amount", "Tax", "Total_Amount", "createdAt"})
 @Entity
 public class Product extends DateTime {
     @Id
@@ -19,9 +19,36 @@ public class Product extends DateTime {
     private String Description;
     private LocalDateTime createdAt;
     private String imagePath;
+    private double Amount;
+    private double Tax;
+    private double Total_Amount;
 
     @Transient
     private String imageUrl;
+
+    public double getTax() {
+        return Tax;
+    }
+
+    public void setTax(double tax) {
+        Tax = tax;
+    }
+
+    public double getTotal_Amount() {
+        return Total_Amount;
+    }
+
+    public void setTotal_Amount(double total_Amount) {
+        Total_Amount = total_Amount;
+    }
+
+    public double getAmount() {
+        return Amount;
+    }
+
+    public void setAmount(double amount) {
+        Amount = amount;
+    }
 
     public String getImageUrl() {
         if (imagePath == null) return null;
