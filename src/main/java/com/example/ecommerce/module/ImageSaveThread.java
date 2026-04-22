@@ -1,5 +1,7 @@
-package com.example.ecommerce.configuration;
+package com.example.ecommerce.module;
 import java.io.File;
+import java.io.FileOutputStream;
+
 import org.springframework.web.multipart.MultipartFile;
 
 public class ImageSaveThread extends Thread {
@@ -18,11 +20,12 @@ public class ImageSaveThread extends Thread {
     public void run() {
         try {
             File file = new File(uploadDir + fileName);
-            image.transferTo(file);
+            FileOutputStream fos=new FileOutputStream(file);
+            fos.write(image.getBytes());
+            fos.close();
             System.out.println("Image saved successfully (Thread)");
         } catch (Exception e) {
             System.out.println("Image save failed: " + e.getMessage());
         }
     }
 }
-

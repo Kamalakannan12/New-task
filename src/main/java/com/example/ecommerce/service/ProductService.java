@@ -1,8 +1,9 @@
 package com.example.ecommerce.service;
-
+import java.time.*;
 import com.example.ecommerce.configuration.calculation;
 import com.example.ecommerce.mobile.Mobile;
-import com.example.ecommerce.configuration.ImageSaveThread;
+import com.example.ecommerce.module.ImageSaveThread;
+import com.example.ecommerce.module.Imagesave;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.ecommerce.entity.Product;
@@ -10,6 +11,7 @@ import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -36,6 +38,8 @@ public class ProductService {
         return repo.save(product);
     }
     //Method overloading
+    //image upload
+    //Thread handle
     public Product addProduct(String name, double price, int quantity, String brand, MultipartFile image) {
 
         try {
@@ -45,18 +49,25 @@ public class ProductService {
             }
 
             // create folder
-            String uploadDir = System.getProperty("user.dir") + "/uploads/";
+            String uploadDir = "C:\\Users\\acer\\Desktop" + "/uploads/";
             File dir = new File(uploadDir);
             if (!dir.exists()) {
                 dir.mkdirs();
             }
 
             // save file
-            String fileName = System.currentTimeMillis() + "_" + image.getOriginalFilename();
-//            File file = new File(uploadDir + fileName);
-//            image.transferTo(file);
-            ImageSaveThread thread = new ImageSaveThread(image, uploadDir, fileName);
-            thread.start();
+            LocalDateTime TimeDate= LocalDateTime.now();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
+            String time = LocalDateTime.now().format(formatter);
+            String fileName = time + "_" + image.getOriginalFilename();
+//            ImageSaveThread thread = new ImageSaveThread(image, uploadDir, fileName);
+//            thread.start();
+//            thread.sleep(1000);
+
+            // Runnable thread
+            Imagesave runthread=new Imagesave(image, uploadDir, fileName);
+            Thread T1=new Thread(runthread);
+            T1.start();
 
             // create product
             Product product = new Product();
@@ -66,7 +77,6 @@ public class ProductService {
             product.setBrand(brand);
             product.setCreatedAt(product.CurrentDateTime());
             product.setImagePath(fileName);
-
             Mobile mobile = mobileMap.get(product.getBrand().toLowerCase());
             if (mobile == null) {
                 System.out.println("Invalid input");
@@ -87,19 +97,21 @@ public class ProductService {
             return repo.save(product);
 
         } catch (Exception e) {
-            e.printStackTrace(); // VERY IMPORTANT
+            e.printStackTrace();
             throw new RuntimeException("Error while uploading image");
         }
     }
-
+//get all products
     public List<Product> getAllProducts() {
         return repo.findAll();
     }
 
+//get product by Id
     public Product getProductById(Long id) {
         return repo.findById(id).orElse(null);
     }
 
+//Update product
     public Product updateProduct(Long id, Product newProduct) {
         Product existing = repo.findById(id).orElse(null);
 
@@ -117,7 +129,7 @@ public class ProductService {
         }
         return null;
     }
-
+//update specific value using patch
     public Product patchUpdateProduct(Long id, Product newProduct) {
 
         Product existing = repo.findById(id).orElse(null);
@@ -142,6 +154,7 @@ public class ProductService {
         return null;
     }
 
+    //Delete products
     public String deleteProduct(Long id) {
         repo.deleteById(id);
         return "Product deleted successfully";

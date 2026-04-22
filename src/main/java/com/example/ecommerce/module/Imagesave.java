@@ -1,8 +1,9 @@
-package com.example.ecommerce.configuration;
+package com.example.ecommerce.module;
 
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
+import java.io.FileOutputStream;
 
 public class Imagesave implements Runnable{
     private MultipartFile image;
@@ -16,10 +17,12 @@ public class Imagesave implements Runnable{
     public void run(){
         try{
             File file = new File(uploadDir + fileName);
-            image.transferTo(file);
-            System.out.println("Image saved successfully (Thread)");
+            FileOutputStream fos=new FileOutputStream(file);
+            fos.write(image.getBytes());
+            fos.close();
+            System.out.println("image saved successfully");
         } catch (Exception e) {
-            System.out.println("Image save failed: " + e.getMessage());
+             e.printStackTrace();
         }
     }
 }

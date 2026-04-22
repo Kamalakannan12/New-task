@@ -1,32 +1,59 @@
 package com.example.ecommerce.service;
-import com.example.ecommerce.entity.Product;
+
 import com.example.ecommerce.entity.Order;
-import com.example.ecommerce.repository.ProductRepository;
+import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.repository.OrderRepository;
+import com.example.ecommerce.repository.ProductRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDateTime;
+import java.util.List;
 
-public Order placeOrder(int productId, int qty) {
+@Service
+public class OrderService {
 
-    Product product = ProductRepository.findById(productId);
+    @Autowired
+    private ProductRepository productRepo;
 
-    if (product == null) {
-        throw new RuntimeException("Product not found");
+    @Autowired
+    private OrderRepository orderRepo;
+
+    private static final Object lock = new Object();
+
+    public Order placeOrder(Long productId, int qty) {
+
+        Product product = productRepo.findById(productId).orElse(null);
+
+        if (product == null) {
+            throw new RuntimeException("Product not found");
+        }
+        synchronized (lock) {
+
+            if (product.getQuantity() < qty) {
+                throw new RuntimeException("Out of stock");
+            }
+
+            product.setQuantity(product.getQuantity() - qty);
+            productRepo.save(product);
+        }
+
+        // create order
+        Order order = new Order();
+        order.setproductid(product.getId());
+        order.setProductName(product.getName());
+        order.setQuantity(qty);
+        order.setTotalPrice(product.getPrice() * qty);
+        order.setOrderDate(LocalDateTime.now());
+
+        return orderRepo.save(order);
     }
 
-    if (product.getQuantity() < qty) {
-        throw new RuntimeException("Out of stock");
-    }
-    synchronized (this) {
-        product.setQuantity(product.getQuantity() - qty);
+    public Order getOrdersByProductId(Long productid) {
+        return orderRepo.getOrdersByProductId(productid);
     }
 
-    Order order = new Order();
-    order.setProductName(product.getName());
-    order.setQuantity(qty);
-    order.setTotalPrice(product.getPrice() * qty);
-    order.setOrderDate(LocalDateTime.now());
-
-    OrderRepository.save(order);
-
-    return order;
+    public List<Order> getorderstable() {
+        return orderRepo.getorderstable();
+    }
 }
