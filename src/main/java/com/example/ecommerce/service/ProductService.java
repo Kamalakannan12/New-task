@@ -40,7 +40,7 @@ public class ProductService {
     //Method overloading
     //image upload
     //Thread handle
-    public Product addProduct(String name, double price, int quantity, String brand, MultipartFile image) {
+    public Product addProduct(String name, double price, int quantity, String brand,String email, MultipartFile image) {
 
         try {
             // check image
@@ -75,6 +75,7 @@ public class ProductService {
             product.setPrice(price);
             product.setQuantity(quantity);
             product.setBrand(brand);
+//            product.setEmail(email);
             product.setCreatedAt(product.CurrentDateTime());
             product.setImagePath(fileName);
             Mobile mobile = mobileMap.get(product.getBrand().toLowerCase());

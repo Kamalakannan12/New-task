@@ -11,7 +11,36 @@ public class Order {
     private long id;
     private long productid;
     private String productName;
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    private String email;
     private double totalPrice;
+    private String name;
+
+    public String getPhoneNo() {
+        return phoneNo;
+    }
+
+    public void setPhoneNo(String phoneNo) {
+        this.phoneNo = phoneNo;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    private String phoneNo;
     private LocalDateTime orderDate;
 
     public long getproductid() {

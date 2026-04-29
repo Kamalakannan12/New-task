@@ -14,9 +14,18 @@ public class OrderController {
     private OrderService service;
     @PostMapping
     public Order placeOrder(@RequestParam Long productId,
-                            @RequestParam int qty) {
-        return service.placeOrder(productId, qty);
+                            @RequestParam int qty,@RequestParam String email) {
+        return service.placeOrder(productId, qty,email);
     }
+    @PostMapping("/sendmail")
+    public String sendmail(){
+        return service.sendmessage();
+    }
+    @PostMapping("/mailwithcc")
+    public String sendmailwithcc(){
+        return  service.ccmessage();
+    }
+
     @GetMapping("/product")
     public Order getOrders(@RequestParam Long productid) {
         return service.getOrdersByProductId(productid);

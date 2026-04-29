@@ -22,6 +22,8 @@ public class Product extends DateTime {
     private double Amount;
     private double Tax;
     private double Total_Amount;
+    //private String email;
+
 
     @Transient
     private String imageUrl;

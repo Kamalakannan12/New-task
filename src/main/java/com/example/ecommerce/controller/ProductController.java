@@ -31,9 +31,10 @@ public class ProductController {
             @RequestParam double price,
             @RequestParam int quantity,
             @RequestParam String brand,
+            @RequestParam String email,
             @RequestParam MultipartFile image)throws IOException {
 
-        return service.addProduct(name, price, quantity,brand, image);
+        return service.addProduct(name, price, quantity,brand,email,image);
     }
 
     @GetMapping

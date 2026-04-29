@@ -23,7 +23,6 @@ public class FindDuplicate {
 
                 if (cell != null) {
                     String value = cell.toString();
-
                     if (!uniqueValues.add(value)) {
                         duplicates.add(value); // duplicate found
                     }
