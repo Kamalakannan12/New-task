@@ -37,19 +37,19 @@ public class PdfService {
             document.add(new Paragraph(" "));
 
             // Customer Details
-            document.add(new Paragraph("Customer Name: " + order.getName()));
-            document.add(new Paragraph("Email: " + order.getEmail()));
-            document.add(new Paragraph("Phone: " + order.getPhoneNo()));
+            document.add(new Paragraph("Customer Name: " + order.getUser().getName()));
+            document.add(new Paragraph("Email: " + order.getUser().getEmail()));
+            document.add(new Paragraph("Phone: " + order.getUser().getPhone()));
 
             document.add(new Paragraph(" "));
 
-            // 🔹 Order Info
+            // Order Info
             document.add(new Paragraph("Order ID: " + order.getId()));
             document.add(new Paragraph("Order Date: " + order.getOrderDate()));
 
             document.add(new Paragraph(" "));
 
-            // 🔹 Table
+            // Table
             float[] columnWidth = {200F, 100F, 100F};
             Table table = new Table(columnWidth);
 
@@ -57,7 +57,7 @@ public class PdfService {
             table.addCell("Quantity");
             table.addCell("Total");
 
-            table.addCell(order.getProductName());
+            table.addCell(order.getProduct().getName());
             table.addCell(String.valueOf(order.getQuantity()));
             table.addCell(String.valueOf(order.getTotalPrice()));
 
@@ -65,7 +65,7 @@ public class PdfService {
 
             document.add(new Paragraph(" "));
 
-            // 🔹 Total
+            // Total
             document.add(new Paragraph("Total Amount: ₹ " + order.getTotalPrice())
                     .setBold());
 

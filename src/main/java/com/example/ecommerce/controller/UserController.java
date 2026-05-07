@@ -25,7 +25,11 @@ public class UserController {
     public List<UserDetails> getAllUsers() {
         return userService.getAllUsers();
     }
-
+    //status check
+    @GetMapping("/status")
+    public List<String> getUserStatus() {
+        return userService.getUserStatus(0); // 7 days rule
+    }
     // Get user by ID
     @GetMapping("/{id}")
     public UserDetails getUserById(@PathVariable Long id) {

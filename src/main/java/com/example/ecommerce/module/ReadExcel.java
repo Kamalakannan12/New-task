@@ -17,7 +17,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 public class ReadExcel {
     public static void main(String[] args) {
 
-        String filePath = "C:\\Users\\acer\\Documents\\Book1.xlsx";
+        String filePath ="C:\\Users\\acer\\Desktop\\Book2.xlsx";
 
         try {
             //  Open file
@@ -31,6 +31,9 @@ public class ReadExcel {
             SimpleDateFormat sdf = new SimpleDateFormat("dd-MM-yyyy");
 
             for (Row row : sheet) {
+                if (row == null) {
+                    continue; // skip empty row
+                }
                 for (Cell cell : row) {
                     switch (cell.getCellType()) {
 
@@ -41,17 +44,17 @@ public class ReadExcel {
 
                         case NUMERIC:
 
-                                if (DateUtil.isCellDateFormatted(cell)) {
+                            if (DateUtil.isCellDateFormatted(cell)) {
 
-                                    Date date = cell.getDateCellValue();
+                                Date date = cell.getDateCellValue();
 
-                                    System.out.println(sdf.format(date));
+                                System.out.print(sdf.format(date));
 
-                                } else {
+                            } else {
 
-                                    double value = cell.getNumericCellValue();
-                                    System.out.print( value+"\t");
-                                }
+                                double value = cell.getNumericCellValue();
+                                System.out.print(value + " ");
+                            }
 
                             break;
 
@@ -67,9 +70,9 @@ public class ReadExcel {
             }
 
             //display matching row value
-            int product_id = 3;
+            int product_id = 4;
             for (Row row : sheet) {
-                if(row.getRowNum()==0){
+                if (row.getRowNum() == 0) {
                     continue;       //header skip
                 }
 
@@ -81,7 +84,7 @@ public class ReadExcel {
 
                     if (prodNo == product_id) {
 
-                        System.out.println("Record Found:");
+                        System.out.print("Record Found:");
 
                         for (Cell c : row) {
                             System.out.print(c.toString() + " ");
@@ -93,7 +96,7 @@ public class ReadExcel {
             }
 
             //display column value using index
-            int columnIndex=2;
+            int columnIndex = 2;
             for (Row row : sheet) {
 
                 Cell cell = row.getCell(columnIndex);
@@ -101,9 +104,12 @@ public class ReadExcel {
                 if (cell != null) {
                     System.out.println(cell.toString());
                 }
+                if (row == null || row.getPhysicalNumberOfCells() == 0) {
+                    continue;
+                }
             }
-            int lastrow=sheet.getLastRowNum();
-            Row add= sheet.createRow(lastrow+1);
+            int lastrow = sheet.getLastRowNum();
+            Row add = sheet.createRow(lastrow + 1);
             add.createCell(0).setCellValue(6);
             add.createCell(1).setCellValue("Mobile");
             add.createCell(2).setCellValue(4);
@@ -119,64 +125,66 @@ public class ReadExcel {
 
             cell.setCellStyle(style);
 
-            //delete data using index
 
-            int regNoToDelete = 3; //  input
+        //delete data using index
 
-            int rowIndexToDelete = -1;
+        int regNoToDelete = 3; //  input
 
-            //  Finding row
-            for (Row row : sheet) {
+        int rowIndexToDelete = -1;
 
-                if (row.getRowNum() == 0) continue; // skip header
+        //  Finding row
+        for (Row row : sheet) {
 
-                  cell = row.getCell(0); // RegNo column
+            if (row.getRowNum() == 0) continue; // skip header
 
-                if (cell != null && cell.getCellType() == CellType.NUMERIC) {
+            cell = row.getCell(0); // RegNo column
 
-                    int regNo = (int) cell.getNumericCellValue();
+            if (cell != null && cell.getCellType() == CellType.NUMERIC) {
 
-                    if (regNo == regNoToDelete) {
-                        rowIndexToDelete = row.getRowNum();
-                        break;
-                    }
+                int regNo = (int) cell.getNumericCellValue();
+
+                if (regNo == regNoToDelete) {
+                    rowIndexToDelete = row.getRowNum();
+                    break;
                 }
             }
-            file.close();
-            if (rowIndexToDelete != -1) {
+        }
+        file.close();
+        if (rowIndexToDelete != -1) {
 
-                int lastRowNum = sheet.getLastRowNum();
+            int lastRowNum = sheet.getLastRowNum();
 
-                if (rowIndexToDelete >= 0 && rowIndexToDelete < lastRowNum) {
+            if (rowIndexToDelete >= 0 && rowIndexToDelete < lastRowNum) {
 
-                    // Shift rows up
-                    sheet.shiftRows(rowIndexToDelete + 1, lastRowNum, -1);
+                // Shift rows up
+                sheet.shiftRows(rowIndexToDelete + 1, lastRowNum, -1);
 
-                } else if (rowIndexToDelete == lastRowNum) {
+            } else if (rowIndexToDelete == lastRowNum) {
 
-                    // Last row remove
-                    Row removingRow = sheet.getRow(rowIndexToDelete);
-                    if (removingRow != null) {
-                        sheet.removeRow(removingRow);
-                    }
+                // Last row remove
+                Row removingRow = sheet.getRow(rowIndexToDelete);
+                if (removingRow != null) {
+                    sheet.removeRow(removingRow);
                 }
-
-                System.out.println("Row deleted successfully!");
-
-            } else {
-                System.out.println("Id not found!");
             }
-            FileOutputStream out=new FileOutputStream(filePath);
-            workbook.write(out);
-            workbook.close();
-            out.close();
-        } catch (Exception e) {
+
+            System.out.println("Row deleted successfully!");
+
+        } else {
+            System.out.println("Id not found!");
+        }
+        FileOutputStream out = new FileOutputStream(filePath);
+        workbook.write(out);
+        workbook.close();
+        out.close();
+    }
+            catch (Exception e) {
             e.printStackTrace();
         }
 
         //copy file from one dir to another dir
-        Path source = Paths.get("C:\\Users\\acer\\Documents\\Book1.xlsx");
-        Path destination = Paths.get("C:\\Users\\acer\\Desktop\\Book1.xlsx");
+        Path source = Paths.get("C:\\Users\\acer\\Desktop\\Book1.xlsx");
+        Path destination = Paths.get("C:\\Users\\acer\\Documents\\Book1.xlsx");
         try {
             Files.copy(source, destination, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("File copied successfully!");

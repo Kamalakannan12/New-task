@@ -14,8 +14,12 @@ public class OrderController {
     private OrderService service;
     @PostMapping
     public Order placeOrder(@RequestParam Long productId,
-                            @RequestParam int qty,@RequestParam String email) {
-        return service.placeOrder(productId, qty,email);
+                            @RequestParam int qty,@RequestParam Long userid) {
+        return service.placeOrder(productId, qty,userid);
+    }
+    @GetMapping("/fetchorder")
+    public List<Order> Fetch(@RequestParam Long productid){
+        return service.getorders(productid);
     }
     @PostMapping("/sendmail")
     public String sendmail(){

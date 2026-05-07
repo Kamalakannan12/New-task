@@ -4,6 +4,8 @@ import com.example.ecommerce.configuration.calculation;
 import com.example.ecommerce.mobile.Mobile;
 import com.example.ecommerce.module.ImageSaveThread;
 import com.example.ecommerce.module.Imagesave;
+import com.example.ecommerce.repository.OrderRepository;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.example.ecommerce.entity.Product;
@@ -22,6 +24,8 @@ public class ProductService {
     private ProductRepository repo;
     @Autowired
     private Map<String, Mobile> mobileMap;
+    @Autowired
+    private OrderRepository orderRepository;
     @Autowired
     private Map<String, calculation> calculationMap;
     private final String uploadimg="upload/";
@@ -156,8 +160,11 @@ public class ProductService {
     }
 
     //Delete products
+    @Transactional
     public String deleteProduct(Long id) {
-        repo.deleteById(id);
+        Product product = repo.findById(id)
+                .orElseThrow(() -> new RuntimeException("Product not found"));
+        repo.delete(product);
         return "Product deleted successfully";
     }
 }

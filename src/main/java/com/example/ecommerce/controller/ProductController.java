@@ -1,14 +1,19 @@
 package com.example.ecommerce.controller;
 
+import com.example.ecommerce.service.DownloadService;
 import jakarta.transaction.Status;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.service.ProductService;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -20,6 +25,8 @@ public class ProductController {
 
     @Autowired
     private ProductService service;
+    @Autowired
+    private DownloadService downloadService;
 
     @PostMapping
     public Product addProduct(@RequestBody Product product) {
@@ -39,7 +46,8 @@ public class ProductController {
 
     @GetMapping
     public List<Product> getAllProducts() {
-        return service.getAllProducts();
+        List<Product>products=service.getAllProducts();
+        return products;
     }
 
     @GetMapping("/{id}")
@@ -80,5 +88,45 @@ public class ProductController {
                 .ok()
                 .header("Content-Type", Files.probeContentType(file.toPath()))
                 .body(image);
+    }
+    @GetMapping("/export/product/{id}")
+    public ResponseEntity<byte[]> export(@PathVariable Long id) throws Exception {
+        Product product = service.getProductById(id);
+
+        ByteArrayInputStream excel = downloadService.exportProductOrdersToExcel(product);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=product_orders.xlsx")
+                .body(excel.readAllBytes());
+    }
+    @GetMapping("/export/product")
+    public ResponseEntity<byte[]> export() throws Exception {
+        List<Product>products=service.getAllProducts();
+        ByteArrayInputStream excel = downloadService.export(products);
+
+        return ResponseEntity.ok()
+                .header("Content-Disposition", "attachment; filename=product_orders.xlsx")
+                .body(excel.readAllBytes());
+    }
+    @GetMapping("/export/csv")
+    public ResponseEntity<?> exportCSV() throws Exception {
+
+        List<Product> products = service.getAllProducts();
+
+        ByteArrayInputStream csv = downloadService.exportCSV(products);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_orders.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .body(new InputStreamResource(csv));
+    }
+    @GetMapping("/export/user/{id}")
+    public ResponseEntity<?> generatepdf(@PathVariable Long id) throws Exception {
+        ByteArrayInputStream pdf = downloadService.generatePdf(id);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_orders.pdf")
+                .contentType(MediaType.APPLICATION_PDF)
+                .body(new InputStreamResource(pdf));
     }
 }

@@ -18,6 +18,7 @@ public class EmailService {
     @Autowired
     private JavaMailSender mailSender;
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
+
     public void sendOrderConfirmation(String toEmail, Order order,byte[] pdfbytes,String ccEmal) {
 try {
     MimeMessage message = mailSender.createMimeMessage();
@@ -31,7 +32,7 @@ try {
     helper.setText(
             "Order Confirmed!\n\n" +
                     "Order ID: " + order.getId() + "\n" +
-                    "Product: " + order.getProductName() + "\n" +
+                    "Product: " + order.getProduct().getName() + "\n" +
                     "Quantity: " + order.getQuantity() + "\n" +
                     "Total Price: " + order.getTotalPrice()
     );
@@ -131,5 +132,38 @@ try {
             throw new RuntimeException(e);
         }
     }
+
+    public void sendSimpleMail(String email) {
+        try {
+        MimeMessage message = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+        helper.setFrom("kamalakannan200418@gmail.com");
+        helper.setTo(email);
+        //helper.setCc(cc);
+        helper.setSubject("Special Offers Just for You!");
+        helper.setText("We are excited to bring you our latest");
+        mailSender.send(message);}
+    catch (Exception e) {
+        throw new RuntimeException(e);
     }
+    }
+
+    public void sendEmail(String email, String s, String s1) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setFrom("kamalakannan200418@gmail.com");
+            helper.setTo(email);
+            //helper.setCc(cc);
+            helper.setSubject("Special Offers Just for You!");
+            helper.setText(s+"\n "+s1+"\nWe are excited to bring you our latest");
+            mailSender.send(message);}
+        catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+}
 

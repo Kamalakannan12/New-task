@@ -1,8 +1,10 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.entity.Invoice;
 import com.example.ecommerce.entity.Order;
 import com.example.ecommerce.entity.Product;
 import com.example.ecommerce.entity.UserDetails;
+import com.example.ecommerce.repository.InvoiceRepository;
 import com.example.ecommerce.repository.OrderRepository;
 import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,10 +27,12 @@ public class OrderService {
     private UserService userService;
     @Autowired
     private PdfService pdfService;
+    @Autowired
+    private InvoiceRepository invoiceRepo;
 
     private static final Object lock = new Object();
 
-    public Order placeOrder(Long productId, int qty,String email) {
+    public Order placeOrder(Long productId, int qty,Long userid) {
 
         Product product = productRepo.findById(productId).orElse(null);
 
@@ -44,26 +48,32 @@ public class OrderService {
             product.setQuantity(product.getQuantity() - qty);
             productRepo.save(product);
         }
-        UserDetails user = userService.getUserByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
+        UserDetails user = userService.getUserById(userid).orElseThrow(() -> new RuntimeException("User not found"));
 
 
         // create order
         Order order = new Order();
-        order.setproductid(product.getId());
-        order.setProductName(product.getName());
+        order.setProduct(product);
         order.setQuantity(qty);
-        order.setName(user.getName());
-        order.setPhoneNo(user.getPhone());
-        order.setEmail(user.getEmail());
+        order.setUser(user);
         order.setTotalPrice(product.getPrice() * qty);
         order.setOrderDate(LocalDateTime.now());
         Order savedOrder = orderRepo.save(order);
-        byte[] pdfBytes = pdfService.generateInvoice(savedOrder.getId());
+        Invoice invoice = new Invoice();
+
+        String invoiceNumber = "INV-" + savedOrder.getId();
+        invoice.setInvoiceNumber(invoiceNumber);
+
+        invoice.setOrder(savedOrder);
+        //savedOrder.setInvoice(invoice);
+
+        invoiceRepo.save(invoice);
+       // byte[] pdfBytes = pdfService.generateInvoice(savedOrder.getId());
 
 
         String ccEmail = "kamalakannan200418@gmail.com";
 
-        emailService.sendOrderConfirmation(user.getEmail(), savedOrder,pdfBytes,ccEmail);
+       // emailService.sendOrderConfirmation(user.getEmail(), savedOrder,pdfBytes,ccEmail);
 
         return savedOrder;
     }
@@ -98,5 +108,11 @@ public class OrderService {
         String cc="dhanush.arumugam@finsurge.ai";
         emailService.sendcc(newmail,cc);
         return "Email send successfully";
+    }
+
+    public List<Order> getorders(Long productid) {
+        Product product=productRepo.getById(productid);
+        List<Order> orders = product.getOrders();
+        return orders;
     }
 }

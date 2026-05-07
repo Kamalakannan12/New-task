@@ -1,10 +1,16 @@
 package com.example.ecommerce.entity;
 
 import com.example.ecommerce.configuration.DateTime;
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import jakarta.persistence.*;
+import org.hibernate.engine.internal.Cascade;
 
 import java.time.LocalDateTime;
+import java.util.List;
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 
 @JsonPropertyOrder({"id", "name", "price", "quantity", "Amount", "Tax", "Total_Amount", "createdAt"})
 @Entity
@@ -22,7 +28,27 @@ public class Product extends DateTime {
     private double Amount;
     private double Tax;
     private double Total_Amount;
-    //private String email;
+    private String offer;
+    @OneToMany(mappedBy="product",cascade = CascadeType.REMOVE)
+    @JsonManagedReference
+    private List<Order> orders;
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    public String getOffer() {
+        return offer;
+    }
+
+    public void setOffer(String offer) {
+        this.offer = offer;
+    }
+//private String email;
 
 
     @Transient

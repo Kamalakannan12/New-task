@@ -1,6 +1,12 @@
 package com.example.ecommerce.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "users")
@@ -17,6 +23,28 @@ public class UserDetails {
 
     private String phone;
     private String address;
+    private LocalDateTime lastactive;
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
+    }
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Order> orders;
+
+
+    public LocalDateTime getLastactive() {
+        return lastactive;
+    }
+
+    public void setLastactive(LocalDateTime lastactive) {
+        this.lastactive = lastactive;
+    }
 
     public String getAddress() {
         return address;
