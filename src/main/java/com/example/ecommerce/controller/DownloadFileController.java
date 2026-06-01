@@ -37,16 +37,16 @@ public class DownloadFileController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new InputStreamResource(file));
     }
-    @GetMapping("/pdf")
-    public ResponseEntity<InputStreamResource> downloadPdf(@PathVariable Long id) {
-
-        ByteArrayInputStream pdf = downloadService.generatePdf(id);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=products.pdf")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(pdf));
-    }
+//    @GetMapping("/pdf")
+//    public ResponseEntity<InputStreamResource> downloadPdf(@PathVariable Long id) {
+//
+//        ByteArrayInputStream pdf = downloadService.generatePdf(id);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=products.pdf")
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(new InputStreamResource(pdf));
+//    }
 
 
 }

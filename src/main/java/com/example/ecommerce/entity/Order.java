@@ -22,12 +22,22 @@ public class Order {
     private Product product;
 
     @ManyToOne
-    @JsonManagedReference
+    @JsonBackReference
     @JoinColumn(name="user_id")
     private UserDetails user;
 
     @OneToOne(mappedBy = "order", cascade = CascadeType.REMOVE)
     private Invoice invoice;
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
+    }
+
+    private String status;
 
     public Product getProduct() {
         return product;

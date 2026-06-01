@@ -120,13 +120,13 @@ public class ProductController {
                 .contentType(MediaType.parseMediaType("text/csv"))
                 .body(new InputStreamResource(csv));
     }
-    @GetMapping("/export/user/{id}")
-    public ResponseEntity<?> generatepdf(@PathVariable Long id) throws Exception {
-        ByteArrayInputStream pdf = downloadService.generatePdf(id);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_orders.pdf")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(new InputStreamResource(pdf));
-    }
+//    @GetMapping("/export/user/{id}")
+//    public ResponseEntity<?> generatepdf(@PathVariable Long id) throws Exception {
+//        ByteArrayInputStream pdf = downloadService.generatePdf(id);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=product_orders.pdf")
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(new InputStreamResource(pdf));
+//    }
 }

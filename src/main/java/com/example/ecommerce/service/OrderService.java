@@ -1,5 +1,9 @@
 package com.example.ecommerce.service;
 
+import com.example.ecommerce.Dto.Event;
+import com.example.ecommerce.Dto.PaymentRequest;
+import com.example.ecommerce.Dto.PaymentResponse;
+import com.example.ecommerce.client.PaymentClient;
 import com.example.ecommerce.entity.Invoice;
 import com.example.ecommerce.entity.Order;
 import com.example.ecommerce.entity.Product;
@@ -8,6 +12,7 @@ import com.example.ecommerce.repository.InvoiceRepository;
 import com.example.ecommerce.repository.OrderRepository;
 import com.example.ecommerce.repository.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -29,6 +34,10 @@ public class OrderService {
     private PdfService pdfService;
     @Autowired
     private InvoiceRepository invoiceRepo;
+    @Autowired
+    private PaymentClient paymentClient;
+    @Autowired
+    KafkaTemplate<String,Event>KafkaTemplate;
 
     private static final Object lock = new Object();
 
@@ -59,6 +68,31 @@ public class OrderService {
         order.setTotalPrice(product.getPrice() * qty);
         order.setOrderDate(LocalDateTime.now());
         Order savedOrder = orderRepo.save(order);
+
+        //payment service
+        PaymentRequest request = new PaymentRequest();
+        request.setOrderId(savedOrder.getId());
+        request.setAmount(savedOrder.getTotalPrice());
+        request.setUserId(user.getId());
+        request.setPaymentMethod("UPI");
+        request.setPaymentDate(savedOrder.getOrderDate());
+
+        PaymentResponse paymentResponse = paymentClient.makePayment(request);
+        System.out.println(paymentResponse.getPaymentLink());
+        System.out.println(paymentResponse.getRazorpayOrderId());
+//        try{
+//            if ("CREATED".equalsIgnoreCase(paymentResponse.getStatus())){
+//                savedOrder.setStatus("PAID");
+//            }
+//            else savedOrder.setStatus("FAIL");
+//        }
+//        catch (Exception e) {
+//            savedOrder.setStatus("FAILED");
+//            System.out.println("Payment failed: " + e.getMessage());
+//        }
+        orderRepo.save(savedOrder);
+
+        //Invoice
         Invoice invoice = new Invoice();
 
         String invoiceNumber = "INV-" + savedOrder.getId();
@@ -73,8 +107,13 @@ public class OrderService {
 
         String ccEmail = "kamalakannan200418@gmail.com";
 
-       // emailService.sendOrderConfirmation(user.getEmail(), savedOrder,pdfBytes,ccEmail);
-
+      // emailService.sendOrderConfirmation(user.getEmail(), savedOrder,pdfBytes,ccEmail);
+        Event event = new Event();
+        event.setOrderId(savedOrder.getId());
+        event.setUserEmail(user.getEmail());
+        event.setUserName(user.getName());
+        event.setTotalPrice(savedOrder.getTotalPrice());
+        KafkaTemplate.send("test-topic", event);
         return savedOrder;
     }
 

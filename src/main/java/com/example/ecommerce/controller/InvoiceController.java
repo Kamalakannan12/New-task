@@ -15,17 +15,17 @@ public class InvoiceController {
     private PdfService pdfService;
 @Autowired
 private InvoiceService invoiceService;
-    @GetMapping("/{orderId}")
-    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long orderId) {
-
-        byte[] pdf = pdfService.generateInvoice(orderId);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION,
-                        "attachment; filename=invoice_" + orderId + ".pdf")
-                .contentType(MediaType.APPLICATION_PDF)
-                .body(pdf);
-    }
+//    @GetMapping("/{orderId}")
+//    public ResponseEntity<byte[]> downloadInvoice(@PathVariable Long orderId) {
+//
+//        byte[] pdf = pdfService.generateInvoice(orderId);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION,
+//                        "attachment; filename=invoice_" + orderId + ".pdf")
+//                .contentType(MediaType.APPLICATION_PDF)
+//                .body(pdf);
+//    }
     @GetMapping("/invoiceid/{Id}")
     public ResponseEntity<?> getinvoicedetai(@PathVariable Long Id){
        Invoice check= invoiceService.checkbyid(Id);

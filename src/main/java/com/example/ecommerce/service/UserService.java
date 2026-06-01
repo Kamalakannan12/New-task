@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +20,7 @@ public class UserService {
 
     // Create user
     public UserDetails createUser(UserDetails user) {
-        user.setLastactive(LocalDateTime.now());
+        user.setLastactive(LocalDate.now());
 
         return userRepository.save(user);
     }
@@ -54,7 +55,7 @@ public class UserService {
 
             String status;
 
-            if (user.getLastactive().isBefore(cutoff)) {
+            if (user.getLastactive().isBefore(LocalDate.now())) {
                 status = "INACTIVE";
             } else {
                 status = "ACTIVE";
@@ -75,7 +76,7 @@ public class UserService {
         for (UserDetails user : users) {
 
             if (user.getLastactive() != null &&
-                    user.getLastactive().isBefore(cutoff)) {
+                    user.getLastactive().isBefore(LocalDate.now())) {
 
                 inactiveUsers.add(user);
             }

@@ -38,7 +38,7 @@ public class QuartzConfig {
                 .withIdentity("inactiveUserTrigger")
                 .startAt(startDate)     // start now
                 .endAt(endDate)
-                .withSchedule(CronScheduleBuilder.cronSchedule("* * 10 * * ?"))
+               // .withSchedule(CronScheduleBuilder.cronSchedule("* * * * * ?"))
                 .build();
     }
 }

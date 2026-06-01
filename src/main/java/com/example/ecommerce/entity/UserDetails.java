@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -23,7 +22,16 @@ public class UserDetails {
 
     private String phone;
     private String address;
-    private LocalDateTime lastactive;
+    private LocalDate lastactive;
+    private String password;
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
 
     public List<Order> getOrders() {
         return orders;
@@ -34,15 +42,15 @@ public class UserDetails {
     }
 
     @OneToMany(mappedBy = "user")
-    @JsonBackReference
+    @JsonManagedReference
     private List<Order> orders;
 
 
-    public LocalDateTime getLastactive() {
+    public LocalDate getLastactive() {
         return lastactive;
     }
 
-    public void setLastactive(LocalDateTime lastactive) {
+    public void setLastactive(LocalDate lastactive) {
         this.lastactive = lastactive;
     }
 

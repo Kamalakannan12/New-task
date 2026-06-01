@@ -12,11 +12,11 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
-import com.itextpdf.layout.element.Table;
+//import com.itextpdf.kernel.pdf.PdfWriter;
+//import com.itextpdf.kernel.pdf.PdfDocument;
+//import com.itextpdf.layout.Document;
+//import com.itextpdf.layout.element.Paragraph;
+//import com.itextpdf.layout.element.Table;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.PrintWriter;
@@ -95,54 +95,54 @@ public class DownloadService {
         return new ByteArrayInputStream(out.toByteArray());
     }
 
-    public ByteArrayInputStream generatePdf(Long id) {
-
-        try {
-            UserDetails user =userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));;
-
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-
-            PdfWriter writer = new PdfWriter(out);
-            PdfDocument pdf = new PdfDocument(writer);
-            Document document = new Document(pdf);
-
-            // Title
-            document.add(new Paragraph("USER DETAIL")
-                    .setBold()
-                    .setFontSize(18));
-
-            document.add(new Paragraph(" "));
-
-            // Table (columns)
-            float[] columnWidth = {100F, 200F, 100F, 100F,200F,200F};
-            Table table = new Table(columnWidth);
-
-            table.addCell("ID");
-            table.addCell("Address");
-            table.addCell("Email");
-            table.addCell("Name");
-            table.addCell("PhoneNo");
-            table.addCell("LastActive");
-
-            // Data rows
-
-                table.addCell(String.valueOf(user.getId()));
-                table.addCell(user.getAddress());
-                table.addCell(String.valueOf(user.getEmail()));
-                table.addCell(String.valueOf(user.getName()));
-                table.addCell(String.valueOf(user.getPhone()));
-                table.addCell(user.getLastactive().toString());
-
-            document.add(table);
-
-            document.close();
-
-            return new ByteArrayInputStream(out.toByteArray());
-
-        } catch (Exception e) {
-            throw new RuntimeException("PDF generation failed: " + e.getMessage());
-        }
-    }
+//    public ByteArrayInputStream generatePdf(Long id) {
+//
+//        try {
+//            UserDetails user =userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));;
+//
+//            ByteArrayOutputStream out = new ByteArrayOutputStream();
+//
+//            PdfWriter writer = new PdfWriter(out);
+//            PdfDocument pdf = new PdfDocument(writer);
+//            Document document = new Document(pdf);
+//
+//            // Title
+//            document.add(new Paragraph("USER DETAIL")
+//                    .setBold()
+//                    .setFontSize(18));
+//
+//            document.add(new Paragraph(" "));
+//
+//            // Table (columns)
+//            float[] columnWidth = {100F, 200F, 100F, 100F,200F,200F};
+//            Table table = new Table(columnWidth);
+//
+//            table.addCell("ID");
+//            table.addCell("Address");
+//            table.addCell("Email");
+//            table.addCell("Name");
+//            table.addCell("PhoneNo");
+//            table.addCell("LastActive");
+//
+//            // Data rows
+//
+//                table.addCell(String.valueOf(user.getId()));
+//                table.addCell(user.getAddress());
+//                table.addCell(String.valueOf(user.getEmail()));
+//                table.addCell(String.valueOf(user.getName()));
+//                table.addCell(String.valueOf(user.getPhone()));
+//                table.addCell(user.getLastactive().toString());
+//
+//            document.add(table);
+//
+//            document.close();
+//
+//            return new ByteArrayInputStream(out.toByteArray());
+//
+//        } catch (Exception e) {
+//            throw new RuntimeException("PDF generation failed: " + e.getMessage());
+//        }
+//    }
 
     public ByteArrayInputStream exportProductOrdersToExcel(Product product) {
         try {
